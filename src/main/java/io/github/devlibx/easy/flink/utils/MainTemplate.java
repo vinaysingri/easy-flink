@@ -20,9 +20,9 @@ public class MainTemplate {
         ParameterTool parameter = null;
         String url = argsParams.getRequired("config");
         if (url.startsWith("s3")) {
-            parameter = ConfigReader.readConfigsFromS3(url, false);
+            parameter = ConfigReader.readConfigsFromS3(url, true);
         } else if (url.startsWith("/")) {
-            parameter = ConfigReader.readConfigsFromFile(url, false);
+            parameter = ConfigReader.readConfigsFromFile(url, true);
         } else {
             throw new Exception("Only s3/file url is supported in config - file must be / or s3://");
         }
