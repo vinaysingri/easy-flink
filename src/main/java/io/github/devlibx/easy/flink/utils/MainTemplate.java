@@ -2,11 +2,12 @@ package io.github.devlibx.easy.flink.utils;
 
 import com.google.common.base.Strings;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
+import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import static org.apache.flink.streaming.api.environment.CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION;
@@ -48,7 +49,8 @@ public class MainTemplate {
             checkpointDir = parameter.get("state.checkpoints.dir");
         }
         if (!Strings.isNullOrEmpty(checkpointDir)) {
-            env.getCheckpointConfig().setCheckpointStorage(checkpointDir);
+            // env.getCheckpointConfig().setC
+            // env.getCheckpointConfig().setCheckpointStorage(checkpointDir);
         }
 
         String backend = null;
@@ -57,8 +59,13 @@ public class MainTemplate {
         } else if (!Strings.isNullOrEmpty(parameter.get("state.backend"))) {
             backend = parameter.get("state.backend");
         }
-        if (!Strings.isNullOrEmpty(backend) && Objects.equals("rocksdb", backend)) {
-            env.setStateBackend(new EmbeddedRocksDBStateBackend());
+        if (!Strings.isNullOrEmpty(backend) && Objects.equals("rocksdb", backend) && !Strings.isNullOrEmpty(checkpointDir)) {
+            // env.setStateBackend(new EmbeddedRocksDBStateBackend());
+            try {
+                env.setStateBackend(new RocksDBStateBackend(checkpointDir));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to set state backend as rocksdb with path=" + checkpointDir, e);
+            }
         }
 
         // start a checkpoint every 1000 ms

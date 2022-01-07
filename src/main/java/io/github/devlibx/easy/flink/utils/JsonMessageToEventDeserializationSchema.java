@@ -7,10 +7,11 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 
 @AllArgsConstructor(onConstructor_ = {@Inject})
-public class JsonMessageToEventDeserializationSchema<T> implements DeserializationSchema<T> {
+public class JsonMessageToEventDeserializationSchema<T> implements DeserializationSchema<T>, Serializable {
     private final Class<T> cls;
 
     @Override
