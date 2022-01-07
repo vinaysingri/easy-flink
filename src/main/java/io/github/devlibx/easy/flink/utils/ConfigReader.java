@@ -10,6 +10,7 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -21,10 +22,7 @@ public class ConfigReader {
      */
     public static ParameterTool readConfigsFromFile(String fileUrl, boolean failOnError) throws IOException {
         try {
-            InputStream objectData = null;
-            ParameterTool parameter = ParameterTool.fromPropertiesFile(objectData);
-            objectData.close();
-            return parameter;
+            return ParameterTool.fromPropertiesFile(new File(fileUrl));
         } catch (IOException e) {
             if (failOnError) {
                 throw e;

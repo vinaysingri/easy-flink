@@ -13,19 +13,25 @@ import static org.apache.flink.streaming.api.environment.CheckpointConfig.Extern
 
 public class MainTemplate {
 
-    public static void main(String[] args, String jobName, RunJob runJob) throws Exception {
-
+    public static ParameterTool buildParameterTool(String[] args) throws Exception {
         // Read config from S3
         ParameterTool argsParams = ParameterTool.fromArgs(args);
         ParameterTool parameter = null;
         String url = argsParams.getRequired("config");
         if (url.startsWith("s3")) {
             parameter = ConfigReader.readConfigsFromS3(url, false);
-        } else if (url.startsWith("file://")) {
+        } else if (url.startsWith("/")) {
             parameter = ConfigReader.readConfigsFromFile(url, false);
         } else {
-            throw new Exception("Only s3/file url is supported in config - file must be file:// or s3://");
+            throw new Exception("Only s3/file url is supported in config - file must be / or s3://");
         }
+        return parameter;
+    }
+
+    public static void main(String[] args, String jobName, RunJob runJob) throws Exception {
+
+        // Read input parameters
+        ParameterTool parameter = buildParameterTool(args);
 
         // Run the input job
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
