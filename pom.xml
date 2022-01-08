@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.devlibx.flink</groupId>
     <artifactId>easy-flink</artifactId>
-    <version>0.0.10</version>
+    <version>0.0.10-SNAPSHOT</version>
     <name>easy-flink</name>
     <url>https://github.com/devlibx/easy-flink</url>
     <description>This will allow you to create a basic project with flink java projects</description>
