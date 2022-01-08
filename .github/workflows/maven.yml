@@ -27,9 +27,14 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-passphrase: GPG_PASSPHRASE
       - name: Publish to the Maven Central Repository
-        run: mvn -B clean install -Dmaven.test.skip=true release:prepare release:perform -P release
+        run: mvn --batch-mode deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      #- name: Publish to the Maven Central Repository
+      #  run: mvn -B clean install -Dmaven.test.skip=true release:prepare release:perform -P release
+      #  env:
+      #    MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+      #    MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+      #    GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      #    GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
