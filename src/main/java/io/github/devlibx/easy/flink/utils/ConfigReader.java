@@ -75,4 +75,25 @@ public class ConfigReader {
             return OffsetsInitializer.latest();
         }
     }
+
+    /**
+     * Helper to find the offset from property file
+     */
+    public static OffsetsInitializer getOffsetsInitializer(String offset, long startingOffsetsTimestamp) {
+        if (Objects.equals("earliest", offset)) {
+            return OffsetsInitializer.earliest();
+        } else if (Objects.equals("latest", offset)) {
+            return OffsetsInitializer.latest();
+        } else if (Objects.equals("committedOffsetsLatest", offset)) {
+            return OffsetsInitializer.committedOffsets(OffsetResetStrategy.LATEST);
+        } else if (Objects.equals("committedOffsetsEarliest", offset)) {
+            return OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST);
+        } else if (Objects.equals("committedOffsetsNone", offset)) {
+            return OffsetsInitializer.committedOffsets(OffsetResetStrategy.NONE);
+        } else if (Objects.equals("timestamp", offset)) {
+            return OffsetsInitializer.timestamp(startingOffsetsTimestamp);
+        } else {
+            return OffsetsInitializer.latest();
+        }
+    }
 }

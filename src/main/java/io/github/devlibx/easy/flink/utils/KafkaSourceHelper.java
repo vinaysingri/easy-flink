@@ -1,5 +1,6 @@
 package io.github.devlibx.easy.flink.utils;
 
+import com.google.common.base.Strings;
 import io.gitbub.devlibx.easy.helper.json.JsonUtils;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,6 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
-import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -52,11 +52,15 @@ public class KafkaSourceHelper {
     }
 
     public static <T> DataStream<T> flink1_14_2_KafkaSource(KafkaSourceConfig config, StreamExecutionEnvironment env, String name, String id, Class<T> cls) {
+        OffsetsInitializer offsetsInitializer = ConfigReader.getOffsetsInitializer(
+                Strings.isNullOrEmpty(config.offsetResetStrategy) ? "committedOffsetsLatest" : config.offsetResetStrategy,
+                config.startingOffsetsTimestamp
+        );
         KafkaSource<T> source = KafkaSource.<T>builder()
                 .setBootstrapServers(config.brokers)
                 .setTopics(config.topics == null || config.topics.isEmpty() ? Collections.singletonList(config.topic) : config.topics)
                 .setGroupId(config.groupId)
-                .setStartingOffsets(OffsetsInitializer.committedOffsets(OffsetResetStrategy.LATEST))
+                .setStartingOffsets(offsetsInitializer)
                 .setValueOnlyDeserializer(new JsonMessageToEventDeserializationSchema<>(cls))
                 .build();
         return env.fromSource(
@@ -96,6 +100,8 @@ public class KafkaSourceHelper {
         private String topic;
         private List<String> topics;
         private String groupId;
+        private String offsetResetStrategy;
+        private long startingOffsetsTimestamp;
     }
 
     @Data
