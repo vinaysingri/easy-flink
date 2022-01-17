@@ -1,12 +1,23 @@
 package io.github.devlibx.easy.flink.utils;
 
+import io.gitbub.devlibx.easy.helper.json.JsonUtils;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.serialization.SerializationSchema;
+import org.apache.flink.connector.base.DeliveryGuarantee;
+import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
+import org.apache.flink.connector.kafka.sink.KafkaSink;
+import org.apache.flink.connector.kafka.source.KafkaSource;
+import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
+import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 
+import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -40,6 +51,21 @@ public class KafkaSourceHelper {
         }
     }
 
+    public static <T> DataStream<T> flink1_14_2_KafkaSource(KafkaSourceConfig config, StreamExecutionEnvironment env, String name, String id, Class<T> cls) {
+        KafkaSource<T> source = KafkaSource.<T>builder()
+                .setBootstrapServers(config.brokers)
+                .setTopics(config.topics == null || config.topics.isEmpty() ? Collections.singletonList(config.topic) : config.topics)
+                .setGroupId(config.groupId)
+                .setStartingOffsets(OffsetsInitializer.committedOffsets(OffsetResetStrategy.LATEST))
+                .setValueOnlyDeserializer(new JsonMessageToEventDeserializationSchema<>(cls))
+                .build();
+        return env.fromSource(
+                source,
+                WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(1)),
+                name
+        ).uid(id);
+    }
+
     public static <T> FlinkKafkaProducer<T> flink1_12_2_KafkaSink(KafkaSinkConfig config, ObjectToKeyConvertor<T> keyConvertor, Class<T> cls) {
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", config.brokers);
@@ -49,6 +75,18 @@ public class KafkaSourceHelper {
                 properties,
                 FlinkKafkaProducer.Semantic.AT_LEAST_ONCE
         );
+    }
+
+    public static <T> KafkaSink<T> flink1_14_2_KafkaSink(KafkaSinkConfig config, ObjectToKeyConvertor<T> keyConvertor, Class<T> cls) {
+        return KafkaSink.<T>builder()
+                .setBootstrapServers(config.brokers)
+                .setRecordSerializer(KafkaRecordSerializationSchema.builder()
+                        .setTopic(config.topic)
+                        .setValueSerializationSchema((SerializationSchema<T>) t -> JsonUtils.asJson(t).getBytes())
+                        .build()
+                )
+                .setDeliverGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+                .build();
     }
 
     @Data
