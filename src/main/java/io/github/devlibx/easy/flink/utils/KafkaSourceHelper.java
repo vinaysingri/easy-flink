@@ -56,6 +56,8 @@ public class KafkaSourceHelper {
                 Strings.isNullOrEmpty(config.offsetResetStrategy) ? "committedOffsetsLatest" : config.offsetResetStrategy,
                 config.startingOffsetsTimestamp
         );
+        int outOfOrderDelay = config.waitForOutOfOrderEventsForSec <= 0 ? 2 : config.waitForOutOfOrderEventsForSec;
+        int idleDelay = config.idealWaitTimeout <= 0 ? 10 : config.idealWaitTimeout;
         KafkaSource<T> source = KafkaSource.<T>builder()
                 .setBootstrapServers(config.brokers)
                 .setTopics(config.topics == null || config.topics.isEmpty() ? Collections.singletonList(config.topic) : config.topics)
@@ -65,7 +67,9 @@ public class KafkaSourceHelper {
                 .build();
         return env.fromSource(
                 source,
-                WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(1)),
+                WatermarkStrategy
+                        .<T>forBoundedOutOfOrderness(Duration.ofSeconds(outOfOrderDelay))
+                        .withIdleness(Duration.ofSeconds(idleDelay)),
                 name
         ).uid(id);
     }
@@ -102,6 +106,8 @@ public class KafkaSourceHelper {
         private String groupId;
         private String offsetResetStrategy;
         private long startingOffsetsTimestamp;
+        private int waitForOutOfOrderEventsForSec;
+        private int idealWaitTimeout;
     }
 
     @Data
