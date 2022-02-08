@@ -90,6 +90,7 @@ public class KafkaSourceHelper {
                 .setBootstrapServers(config.brokers)
                 .setRecordSerializer(KafkaRecordSerializationSchema.builder()
                         .setTopic(config.topic)
+                        .setKeySerializationSchema((SerializationSchema<T>) t -> JsonUtils.asJson(t).getBytes())
                         .setValueSerializationSchema((SerializationSchema<T>) t -> JsonUtils.asJson(t).getBytes())
                         .build()
                 )
