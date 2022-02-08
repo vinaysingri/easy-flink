@@ -25,7 +25,7 @@ public class MainTemplate {
         } else {
             throw new Exception("Only s3/file url is supported in config - file must be / or s3://");
         }
-        return parameter;
+        return parameter.mergeWith(argsParams);
     }
 
     public static void main(String[] args, String jobName, RunJob runJob) throws Exception {
