@@ -15,6 +15,8 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
+import org.apache.flink.streaming.connectors.kafka.partitioner.FlinkFixedPartitioner;
+import org.apache.flink.streaming.connectors.kafka.partitioner.FlinkKafkaPartitioner;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -90,6 +92,12 @@ public class KafkaSourceHelper {
                 .setBootstrapServers(config.brokers)
                 .setRecordSerializer(KafkaRecordSerializationSchema.builder()
                         .setTopic(config.topic)
+                        .setPartitioner(new FlinkKafkaPartitioner<T>() {
+                            @Override
+                            public int partition(T record, byte[] key, byte[] value, String targetTopic, int[] partitions) {
+                                return keyConvertor.partition(record, key, value, targetTopic, partitions);
+                            }
+                        })
                         .setKeySerializationSchema((SerializationSchema<T>) t -> JsonUtils.asJson(t).getBytes())
                         .setValueSerializationSchema((SerializationSchema<T>) t -> JsonUtils.asJson(t).getBytes())
                         .build()
@@ -121,5 +129,7 @@ public class KafkaSourceHelper {
 
     public interface ObjectToKeyConvertor<T> {
         byte[] key(T obj);
+
+        int partition(T record, byte[] key, byte[] value, String targetTopic, int[] partitions);
     }
 }
