@@ -98,7 +98,7 @@ public class KafkaSourceHelper {
                                 return keyConvertor.partition(record, key, value, targetTopic, partitions);
                             }
                         })
-                        .setKeySerializationSchema((SerializationSchema<T>) t -> JsonUtils.asJson(t).getBytes())
+                        .setKeySerializationSchema((SerializationSchema<T>) t -> keyConvertor.getKey(t))
                         .setValueSerializationSchema((SerializationSchema<T>) t -> JsonUtils.asJson(t).getBytes())
                         .build()
                 )
@@ -129,6 +129,8 @@ public class KafkaSourceHelper {
 
     public interface ObjectToKeyConvertor<T> {
         byte[] key(T obj);
+
+        byte[] getKey(T obj);
 
         int partition(T record, byte[] key, byte[] value, String targetTopic, int[] partitions);
     }
