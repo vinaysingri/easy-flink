@@ -57,12 +57,16 @@ public class MainTemplate {
         } else if (!Strings.isNullOrEmpty(parameter.get("state.backend"))) {
             backend = parameter.get("state.backend");
         }
-        if (!Strings.isNullOrEmpty(backend) && Objects.equals("rocksdb", backend) && !Strings.isNullOrEmpty(checkpointDir)) {
-            try {
-                env.setStateBackend(new EmbeddedRocksDBStateBackend());
-                // env.setStateBackend(new RocksDBStateBackend(checkpointDir));
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to set state backend as rocksdb with path=" + checkpointDir, e);
+
+        // check if state backend is explicitly disabled
+        boolean enableStateManagement = !Objects.equals(parameter.get("state.backend.disabled"), "false");
+        if (enableStateManagement) {
+            if (Objects.equals("rocksdb", backend)) {
+                try {
+                    env.setStateBackend(new EmbeddedRocksDBStateBackend());
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to set state backend as rocksdb with path=" + checkpointDir, e);
+                }
             }
         }
 
@@ -73,14 +77,14 @@ public class MainTemplate {
         String checkpointingMode = parameter.get("checkpointingMode", CheckpointingMode.EXACTLY_ONCE.name());
         env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.valueOf(checkpointingMode));
 
-        // make sure 500 ms of progress happen between checkpoints
+        // make sure 30 seconds of pause happen between checkpoints
         env.getCheckpointConfig().setMinPauseBetweenCheckpoints(parameter.getInt("minPauseBetweenCheckpoints", 30 * 1000));
 
         // checkpoints have to complete within one minute, or are discarded
         env.getCheckpointConfig().setCheckpointTimeout(parameter.getInt("checkpointTimeout", 15 * 60000));
 
         // only two consecutive checkpoint failures are tolerated
-        env.getCheckpointConfig().setTolerableCheckpointFailureNumber(parameter.getInt("tolerableCheckpointFailureNumber", 2));
+        env.getCheckpointConfig().setTolerableCheckpointFailureNumber(parameter.getInt("tolerableCheckpointFailureNumber", 5));
 
         // allow only one checkpoint to be in progress at the same time
         env.getCheckpointConfig().setMaxConcurrentCheckpoints(parameter.getInt("maxConcurrentCheckpoints", 1));
