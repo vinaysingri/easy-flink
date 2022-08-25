@@ -5,6 +5,7 @@ import io.gitbub.devlibx.easy.helper.json.JsonUtils;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
@@ -15,7 +16,6 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
-import org.apache.flink.streaming.connectors.kafka.partitioner.FlinkFixedPartitioner;
 import org.apache.flink.streaming.connectors.kafka.partitioner.FlinkKafkaPartitioner;
 
 import java.time.Duration;
@@ -51,6 +51,29 @@ public class KafkaSourceHelper {
                     .name(name)
                     .uid(id);
         }
+    }
+
+    public static <T> DataStream<T> flink1_14_2_KafkaSource(KafkaSourceConfig config, StreamExecutionEnvironment env, String name, String id, DeserializationSchema<T> deserializationSchema) {
+        OffsetsInitializer offsetsInitializer = ConfigReader.getOffsetsInitializer(
+                Strings.isNullOrEmpty(config.offsetResetStrategy) ? "committedOffsetsLatest" : config.offsetResetStrategy,
+                config.startingOffsetsTimestamp
+        );
+        int outOfOrderDelay = config.waitForOutOfOrderEventsForSec <= 0 ? 2 : config.waitForOutOfOrderEventsForSec;
+        int idleDelay = config.idealWaitTimeout <= 0 ? 10 : config.idealWaitTimeout;
+        KafkaSource<T> source = KafkaSource.<T>builder()
+                .setBootstrapServers(config.brokers)
+                .setTopics(config.topics == null || config.topics.isEmpty() ? Collections.singletonList(config.topic) : config.topics)
+                .setGroupId(config.groupId)
+                .setStartingOffsets(offsetsInitializer)
+                .setValueOnlyDeserializer(deserializationSchema)
+                .build();
+        return env.fromSource(
+                source,
+                WatermarkStrategy
+                        .<T>forBoundedOutOfOrderness(Duration.ofSeconds(outOfOrderDelay))
+                        .withIdleness(Duration.ofSeconds(idleDelay)),
+                name
+        ).uid(id);
     }
 
     public static <T> DataStream<T> flink1_14_2_KafkaSource(KafkaSourceConfig config, StreamExecutionEnvironment env, String name, String id, Class<T> cls) {
