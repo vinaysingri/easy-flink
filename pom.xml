@@ -18,7 +18,7 @@
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
         <log4j.version>2.16.0</log4j.version>
         <lombok.version>1.18.16</lombok.version>
-        <easy.version>0.0.80</easy.version>
+        <easy.version>0.0.83</easy.version>
     </properties>
 
     <scm>
