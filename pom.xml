@@ -18,7 +18,7 @@
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
         <log4j.version>2.16.0</log4j.version>
         <lombok.version>1.18.16</lombok.version>
-        <easy.version>0.0.72</easy.version>
+        <easy.version>0.0.79</easy.version>
     </properties>
 
     <scm>
@@ -90,6 +90,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>io.github.devlibx.easy</groupId>
+            <artifactId>rule-engine-drools</artifactId>
+            <version>${easy.version}</version>
+        </dependency>
+
 
         <!-- Add logging framework, to produce console output when running in the IDE. -->
         <!-- These dependencies are excluded from the application JAR by default. -->
