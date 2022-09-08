@@ -21,6 +21,9 @@ public class Configuration implements Serializable {
     @JsonProperty("rule_engine")
     private RuleEngineConfig ruleEngine;
 
+    @JsonProperty("ttl")
+    private StringObjectMap ttl = new StringObjectMap();
+
     @JsonProperty("miscellaneous_properties")
     private StringObjectMap miscellaneousProperties = new StringObjectMap();
 
