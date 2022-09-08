@@ -6,6 +6,7 @@ import io.gitbub.devlibx.easy.helper.string.StringHelper;
 import io.github.devlibx.easy.flink.utils.ConfigReader;
 import io.github.devlibx.easy.flink.utils.v2.config.Configuration;
 import io.github.devlibx.easy.flink.utils.v2.config.EnvironmentConfig;
+import org.apache.commons.io.IOUtils;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
@@ -13,6 +14,10 @@ import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
 
@@ -44,6 +49,19 @@ public class MainTemplateV2<T extends Configuration> {
             configAsString = ConfigReader.readConfigsFromS3AsString(url, true);
         } else if (url.startsWith("/")) {
             configAsString = ConfigReader.readConfigsFromFileAsString(url, true);
+        } else if (url.startsWith("jar")) {
+            String file = url.replace("jar://", "");
+            try (InputStream in = getClass().getResourceAsStream(file)) {
+                configAsString = IOUtils.toString(in, Charset.defaultCharset());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else if (url.startsWith("pwd://")) {
+            String file = url.replace("pwd://", "");
+            Path currentRelativePath = Paths.get("");
+            String runningDir = currentRelativePath.toAbsolutePath().toString();
+            String filePath = runningDir + "/" + file;
+            configAsString = ConfigReader.readConfigsFromFileAsString(filePath, true);
         } else {
             throw new Exception("Only s3/file url is supported in config - file must be / or s3://");
         }

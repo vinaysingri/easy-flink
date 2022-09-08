@@ -5,9 +5,18 @@ import io.github.devlibx.easy.flink.utils.v2.config.Configuration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MainTemplateV2Test {
+
+    @Test
+    public void testConfigFromProjectDirectory() throws Exception {
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+        System.out.println(s);
+    }
 
     @Test
     public void testMainTemplateV2() throws Exception {

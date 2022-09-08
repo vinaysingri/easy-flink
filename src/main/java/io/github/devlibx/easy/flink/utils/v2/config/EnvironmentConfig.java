@@ -5,9 +5,11 @@ import lombok.Data;
 import org.apache.flink.runtime.checkpoint.CheckpointRetentionPolicy;
 import org.apache.flink.streaming.api.CheckpointingMode;
 
+import java.io.Serializable;
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class EnvironmentConfig {
+public class EnvironmentConfig implements Serializable {
     private String jobName;
     private String checkpointDir;
     private String stateBackend = "rocksdb";
