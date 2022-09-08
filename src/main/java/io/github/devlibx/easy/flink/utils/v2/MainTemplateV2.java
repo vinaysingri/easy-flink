@@ -54,7 +54,7 @@ public class MainTemplateV2<T extends Configuration> {
     }
 
     private void setupStore(StreamExecutionEnvironment env, T mainConfig, Class<T> cls) {
-        EnvironmentConfig config = mainConfig.getEnvironmentConfig();
+        EnvironmentConfig config = mainConfig.getEnvironment();
 
         // Set checkpoint dir if provided
         if (!Strings.isNullOrEmpty(config.getCheckpointDir())) {
