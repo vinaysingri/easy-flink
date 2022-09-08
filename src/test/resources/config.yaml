@@ -1,4 +1,4 @@
-environmentConfig:
+environment:
   stateBackend: rocksdb
 
 sources:
