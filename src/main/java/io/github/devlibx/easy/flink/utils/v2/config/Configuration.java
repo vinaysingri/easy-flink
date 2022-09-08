@@ -13,6 +13,7 @@ public class Configuration {
     private EnvironmentConfig environment;
     private Map<String, SourceConfig> sources;
     private RuleEngineConfig ruleEngine;
+
     @JsonProperty("miscellaneous_properties")
-    private StringObjectMap miscellaneousProperties;
+    private StringObjectMap miscellaneousProperties = new StringObjectMap();
 }
