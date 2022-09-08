@@ -1,0 +1,8 @@
+environmentConfig:
+  stateBackend: rocksdb
+
+sources:
+  mainInput:
+    broker: localhost:9092
+    topic: "orders_in"
+    group_id: "1234"
