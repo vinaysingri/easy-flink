@@ -24,6 +24,9 @@ public class Configuration implements Serializable {
     @JsonProperty("ttl")
     private StringObjectMap ttl = new StringObjectMap();
 
+    @JsonProperty("state_store")
+    private StateStoreConfig stateStore;
+
     @JsonProperty("miscellaneous_properties")
     private StringObjectMap miscellaneousProperties = new StringObjectMap();
 
