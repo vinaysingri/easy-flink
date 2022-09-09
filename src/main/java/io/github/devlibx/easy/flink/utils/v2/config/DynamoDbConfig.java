@@ -7,12 +7,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DynamoDbConfig {
+public class DynamoDbConfig implements Serializable {
     @JsonProperty("access_key")
     public String accessKey;
     @JsonProperty("secret_key")
