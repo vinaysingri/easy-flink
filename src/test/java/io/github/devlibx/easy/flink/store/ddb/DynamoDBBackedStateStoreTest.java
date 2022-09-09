@@ -48,6 +48,7 @@ public class DynamoDBBackedStateStoreTest {
         String id = UUID.randomUUID().toString();
         StateStoreConfig stateStoreConfig = new StateStoreConfig();
         stateStoreConfig.setType("dynamo-in-memory");
+        stateStoreConfig.setDdbMustHaveSortKey(true);
         Configuration configuration = new Configuration();
         configuration.setStateStore(stateStoreConfig);
         configuration.getMiscellaneousProperties().put(

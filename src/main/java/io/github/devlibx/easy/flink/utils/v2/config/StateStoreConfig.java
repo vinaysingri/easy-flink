@@ -10,6 +10,7 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StateStoreConfig implements Serializable {
     private String type = "dynamo";
+    private boolean ddbMustHaveSortKey = false;
 
     @JsonProperty("dynamo")
     private DynamoDbConfig ddbConfig;
