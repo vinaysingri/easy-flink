@@ -42,4 +42,46 @@ public class DynamoDBBackedStateStoreTest {
         Assertions.assertNotNull(fromDb);
         Assertions.assertEquals(StringObjectMap.of("name", "harish"), fromDb.getData());
     }
+
+    @Test
+    public void testInMemoryDdbStore() {
+        String id = UUID.randomUUID().toString();
+        StateStoreConfig stateStoreConfig = new StateStoreConfig();
+        stateStoreConfig.setType("dynamo-in-memory");
+        Configuration configuration = new Configuration();
+        configuration.setStateStore(stateStoreConfig);
+        configuration.getMiscellaneousProperties().put(
+                "debug-dynamo-in-memory-operations", true
+        );
+
+        IGenericStateStore dynamoDBBackedStateStore = new ProxyBackedGenericStateStore(configuration);
+
+        dynamoDBBackedStateStore.persist(
+                Key.builder()
+                        .key(id)
+                        .subKey("*")
+                        .build(),
+                GenericState.builder()
+                        .data(StringObjectMap.of("name", "harish"))
+                        .build()
+        );
+
+        GenericState fromDb = dynamoDBBackedStateStore.get(Key.builder().key(id).subKey("*").build());
+        Assertions.assertNotNull(fromDb);
+        Assertions.assertEquals(StringObjectMap.of("name", "harish"), fromDb.getData());
+
+
+        dynamoDBBackedStateStore.persist(
+                Key.builder()
+                        .key(id)
+                        .build(),
+                GenericState.builder()
+                        .data(StringObjectMap.of("name", "harish_1"))
+                        .build()
+        );
+
+        fromDb = dynamoDBBackedStateStore.get(Key.builder().key(id).build());
+        Assertions.assertNotNull(fromDb);
+        Assertions.assertEquals(StringObjectMap.of("name", "harish_1"), fromDb.getData());
+    }
 }

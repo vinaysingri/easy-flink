@@ -1,6 +1,15 @@
 package io.github.devlibx.easy.flink.store;
 
+import org.apache.flink.configuration.Configuration;
+
 public interface IGenericStateStore {
+
+    default void finish() throws Exception {
+    }
+
+    default void open(Configuration parameters) throws Exception {
+    }
+
     /**
      * Persist the state to Store
      */

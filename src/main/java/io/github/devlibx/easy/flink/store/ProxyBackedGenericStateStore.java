@@ -1,6 +1,7 @@
 package io.github.devlibx.easy.flink.store;
 
 import io.github.devlibx.easy.flink.store.ddb.DynamoDBBackedStateStore;
+import io.github.devlibx.easy.flink.store.ddb.InMemoryDynamoDBBackedStateStore;
 import io.github.devlibx.easy.flink.utils.v2.config.Configuration;
 
 import java.io.Serializable;
@@ -18,6 +19,8 @@ public class ProxyBackedGenericStateStore implements IGenericStateStore, Seriali
         if (genericStateStore == null && configuration.getStateStore() != null) {
             if (Objects.equals(configuration.getStateStore().getType(), "dynamo")) {
                 genericStateStore = new DynamoDBBackedStateStore(configuration.getStateStore().getDdbConfig(), configuration);
+            } else if (Objects.equals(configuration.getStateStore().getType(), "dynamo-in-memory")) {
+                genericStateStore = new InMemoryDynamoDBBackedStateStore(configuration);
             }
         }
     }
