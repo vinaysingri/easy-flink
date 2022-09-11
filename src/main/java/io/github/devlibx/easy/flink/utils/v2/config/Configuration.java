@@ -1,5 +1,6 @@
 package io.github.devlibx.easy.flink.utils.v2.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.gitbub.devlibx.easy.helper.map.StringObjectMap;
@@ -7,6 +8,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,9 +35,19 @@ public class Configuration implements Serializable {
     /**
      * Do basic validation
      */
+    @JsonIgnore
     public void validate() {
         if (sources != null) {
             sources.forEach((s, sourceConfig) -> sourceConfig.validate());
+        }
+    }
+
+    @JsonIgnore
+    public Optional<SourceConfig> getSourceByName(String name) {
+        if (sources == null || !sources.containsKey(name)) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable(sources.get(name));
         }
     }
 }
