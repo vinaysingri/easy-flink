@@ -34,7 +34,7 @@ public class StateStoreConfig implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class StoreGroup {
+    public static class StoreGroup implements Serializable {
         private String name = "main";
         private int priority = 0;
     }
