@@ -24,7 +24,7 @@ public class AerospikeConfig implements Serializable {
     private boolean enabled = true;
 
     @JsonProperty("cluster_name")
-    private String clusterName = MAIN_CLUSTER;
+    private String clusterName;
 
     @JsonProperty("store_group")
     private StoreGroup storeGroup = new StoreGroup();
@@ -33,7 +33,7 @@ public class AerospikeConfig implements Serializable {
     public String user;
 
     @JsonProperty("password")
-    public String secretKey;
+    public String password;
 
     @JsonProperty("hosts")
     public List<Host> hosts;
