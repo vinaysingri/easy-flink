@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.List;
 
-import static io.github.devlibx.easy.flink.utils.v2.config.StateStoreConfig.MAIN_CLUSTER;
-
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
@@ -52,7 +50,7 @@ public class AerospikeConfig implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class Host {
+    public static class Host implements Serializable {
         private String host;
         private int port;
     }
