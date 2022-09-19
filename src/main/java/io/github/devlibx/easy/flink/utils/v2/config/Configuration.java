@@ -29,6 +29,9 @@ public class Configuration implements Serializable {
     @JsonProperty("state_store")
     private StateStoreConfig stateStore;
 
+    @JsonProperty("kafka_sinks")
+    private Map<String, KafkaSinkConfig> kafkaSinks;
+
     @JsonProperty("miscellaneous_properties")
     private StringObjectMap miscellaneousProperties = new StringObjectMap();
 
