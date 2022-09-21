@@ -18,8 +18,7 @@
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
         <log4j.version>2.16.0</log4j.version>
         <lombok.version>1.18.16</lombok.version>
-        <easy.version>0.0.88</easy.version>
-        <aws.s3.version>1.12.131</aws.s3.version>
+        <easy.version>0.0.92</easy.version>
     </properties>
 
     <scm>
@@ -58,13 +57,6 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-            <version>${aws.s3.version}</version>
         </dependency>
 
         <dependency>
@@ -136,6 +128,16 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- Take all dependency from "easy" master pom file -->
+            <dependency>
+                <groupId>io.github.devlibx.easy</groupId>
+                <artifactId>easy</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${easy.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.flink</groupId>
                 <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
@@ -165,12 +167,6 @@
                 <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
                 <version>${flink.version}</version>
                 <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk-s3</artifactId>
-                <version>${aws.s3.version}</version>
             </dependency>
 
             <dependency>
