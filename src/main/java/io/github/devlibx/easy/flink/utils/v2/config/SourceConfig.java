@@ -27,12 +27,28 @@ public class SourceConfig implements Serializable {
     @JsonProperty("unique_id")
     private String uniqueId;
 
+    @JsonProperty("offset_reset_strategy")
+    private String offsetResetStrategy;
+
+    @JsonProperty("starting_offsets_timestamp")
+    private long startingOffsetsTimestamp;
+
+    @JsonProperty("wait_for_out_of_order_events_for_sec")
+    private int waitForOutOfOrderEventsForSec;
+
+    @JsonProperty("ideal_wait_timeout")
+    private int idealWaitTimeout;
+
     @JsonIgnore
     public KafkaSourceConfig getKafkaSource() {
         return KafkaSourceConfig.builder()
                 .brokers(broker)
                 .groupId(groupId)
                 .topic(topic)
+                .offsetResetStrategy(offsetResetStrategy)
+                .startingOffsetsTimestamp(startingOffsetsTimestamp)
+                .waitForOutOfOrderEventsForSec(waitForOutOfOrderEventsForSec)
+                .idealWaitTimeout(idealWaitTimeout)
                 .build();
     }
 
