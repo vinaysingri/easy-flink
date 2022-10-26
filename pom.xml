@@ -18,7 +18,7 @@
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
         <log4j.version>2.16.0</log4j.version>
         <lombok.version>1.18.16</lombok.version>
-        <easy.version>0.0.98</easy.version>
+        <easy.version>0.0.100</easy.version>
     </properties>
 
     <scm>
@@ -87,6 +87,11 @@
         <dependency>
             <groupId>io.github.devlibx.easy</groupId>
             <artifactId>rule-engine-drools</artifactId>
+            <version>${easy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.devlibx.easy</groupId>
+            <artifactId>http</artifactId>
             <version>${easy.version}</version>
         </dependency>
 
@@ -178,6 +183,21 @@
             <dependency>
                 <groupId>io.github.devlibx.easy</groupId>
                 <artifactId>helper</artifactId>
+                <version>${easy.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>logback-core</artifactId>
+                        <groupId>ch.qos.logback</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>logback-classic</artifactId>
+                        <groupId>ch.qos.logback</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.github.devlibx.easy</groupId>
+                <artifactId>http</artifactId>
                 <version>${easy.version}</version>
                 <exclusions>
                     <exclusion>

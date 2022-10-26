@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.gitbub.devlibx.easy.helper.map.StringObjectMap;
 import lombok.Data;
+import io.github.devlibx.easy.http.config.Config;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -34,6 +35,9 @@ public class Configuration implements Serializable {
 
     @JsonProperty("miscellaneous_properties")
     private StringObjectMap miscellaneousProperties = new StringObjectMap();
+
+    @JsonProperty("http_config")
+    private Config httpConfig;
 
     /**
      * Do basic validation
